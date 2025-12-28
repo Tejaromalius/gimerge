@@ -89,7 +89,7 @@ func TagBranch(selectedBranch string) (string, error) {
 	timestamp := time.Now().Unix()
 	tagName := fmt.Sprintf("merged.{%s}->{%s}@%d", selectedBranch, currentBranch, timestamp)
 
-	cmd := exec.Command("git", "tag", tagName)
+	cmd := exec.Command("git", "tag", tagName, selectedBranch)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return "", fmt.Errorf("git tag failed: %s: %s", err, string(output))
 	}

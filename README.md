@@ -8,7 +8,7 @@ A sleek TUI tool built with Go and Bubble Tea to manage your git branch merges a
 
 ## Features
 
-- **Smart Tagging**: Create structured tags on your current branch that record exactly what was merged and when.
+- **Smart Tagging**: Create structured tags on the source branch that record exactly what was merged and when.
 - **Timestamped History**: Every merge tag includes a Unix timestamp for precise sorting.
 - **Effortless Cleanup**: Interactive TUI to list merged tags and delete both the tags and their source branches in one go.
 - **Safety First**: Prevents you from accidentally deleting the branch you currently have checked out.
