@@ -131,6 +131,7 @@ func (m model) View() string {
 }
 
 func getBranches() ([]list.Item, error) {
+	current, _ := getCurrentBranch()
 	cmd := exec.Command("git", "for-each-ref", "--sort=-committerdate", "--format=%(refname:short)", "refs/heads", "refs/remotes")
 	out, err := cmd.Output()
 	if err != nil {
@@ -140,7 +141,7 @@ func getBranches() ([]list.Item, error) {
 	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
 	items := make([]list.Item, 0, len(lines))
 	for _, l := range lines {
-		if l != "" {
+		if l != "" && l != current {
 			items = append(items, &item{title: l})
 		}
 	}
@@ -219,7 +220,8 @@ func tagBranch(selectedBranch string) (string, error) {
 	}
 
 	timestamp := time.Now().Unix()
-	tagName := fmt.Sprintf("merged.{%s}->{%s}@%d", currentBranch, selectedBranch, timestamp)
+	// Selected branch is SOURCE, Current branch is TARGET
+	tagName := fmt.Sprintf("merged.{%s}->{%s}@%d", selectedBranch, currentBranch, timestamp)
 
 	cmd := exec.Command("git", "tag", tagName)
 	output, err := cmd.CombinedOutput()
