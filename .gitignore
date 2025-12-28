@@ -1,0 +1,6 @@
+# files
+gimerge
+go.sum
+
+# directories
+.vscode/
