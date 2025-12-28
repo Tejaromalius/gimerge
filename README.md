@@ -34,7 +34,7 @@ Run `gimerge` when you are on your **target branch** (e.g., `main` or `developme
 ```
 
 1. Select the branch you just merged from the list.
-2. It will create a tag in this format: `merged.{source_branch}->{your_current_branch}@1735381340`.
+2. It will create a tag in this format: `merged.{source_branch}->{your_current_branch}#sha123@1735381340`.
 
 ### 🧹 Cleaning Up
 

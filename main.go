@@ -35,6 +35,9 @@ func main() {
 				t := time.Unix(tg.TS, 0)
 				dateStr := t.Format("2006-01-02 15:04:05")
 				desc := fmt.Sprintf("%s: %s -> %s", dateStr, tg.Source, tg.Target)
+				if tg.SHA != "" {
+					desc = fmt.Sprintf("[%s] %s", tg.SHA, desc)
+				}
 				items = append(items, &tui.Item{
 					Title:       tg.Name,
 					Description: desc,

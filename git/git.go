@@ -14,11 +14,21 @@ type TagInfo struct {
 	Name   string
 	Source string
 	Target string
+	SHA    string
 	TS     int64
 }
 
 func GetCurrentBranch() (string, error) {
 	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	out, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
+func GetShortSHA(branch string) (string, error) {
+	cmd := exec.Command("git", "rev-parse", "--short=6", branch)
 	out, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -52,7 +62,7 @@ func GetMergedTags() ([]TagInfo, error) {
 	}
 
 	lines := strings.Split(strings.TrimSpace(string(out)), "\n")
-	re := regexp.MustCompile(`^merged\.?\{(.+)\}->\{(.+)\}@(\d+)$`)
+	re := regexp.MustCompile(`^merged\.?\{(.+)\}->\{(.+)\}(?:#([^@]+))?@(\d+)$`)
 
 	var detected []TagInfo
 	for _, l := range lines {
@@ -60,15 +70,16 @@ func GetMergedTags() ([]TagInfo, error) {
 			continue
 		}
 		matches := re.FindStringSubmatch(l)
-		if len(matches) < 4 {
+		if len(matches) < 5 {
 			continue
 		}
 
-		ts, _ := strconv.ParseInt(matches[3], 10, 64)
+		ts, _ := strconv.ParseInt(matches[4], 10, 64)
 		detected = append(detected, TagInfo{
 			Name:   l,
 			Source: matches[1],
 			Target: matches[2],
+			SHA:    matches[3],
 			TS:     ts,
 		})
 	}
@@ -87,7 +98,11 @@ func TagBranch(selectedBranch string) (string, error) {
 	}
 
 	timestamp := time.Now().Unix()
-	tagName := fmt.Sprintf("merged.{%s}->{%s}@%d", selectedBranch, currentBranch, timestamp)
+	sha, err := GetShortSHA(selectedBranch)
+	if err != nil {
+		return "", fmt.Errorf("failed to get short sha: %w", err)
+	}
+	tagName := fmt.Sprintf("merged.{%s}->{%s}#%s@%d", selectedBranch, currentBranch, sha, timestamp)
 
 	cmd := exec.Command("git", "tag", tagName, selectedBranch)
 	if output, err := cmd.CombinedOutput(); err != nil {
@@ -98,7 +113,7 @@ func TagBranch(selectedBranch string) (string, error) {
 }
 
 func CleanupTagsAndBranches(tags []string) error {
-	re := regexp.MustCompile(`^merged\.?\{(.+)\}->\{.*\}@\d+$`)
+	re := regexp.MustCompile(`^merged\.?\{(.+)\}->\{.*\}(?:#\w+)?@\d+$`)
 	currentBranch, _ := GetCurrentBranch()
 
 	for _, tag := range tags {
