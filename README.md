@@ -18,8 +18,8 @@ A sleek TUI tool built with Go and Bubble Tea to manage your git branch merges a
 Ensure you have [Go](https://golang.org/doc/install) installed.
 
 ```bash
-git clone <your-repo-url>
-cd Gimerge
+git clone https://github.com/Tejaromalius/gimerge/
+cd gimerge
 go build -o gimerge
 ```
 
