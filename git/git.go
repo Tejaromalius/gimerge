@@ -98,7 +98,7 @@ func TagBranch(selectedBranch string) (string, error) {
 	}
 
 	timestamp := time.Now().Unix()
-	sha, err := GetShortSHA(selectedBranch)
+	sha, err := GetShortSHA(currentBranch)
 	if err != nil {
 		return "", fmt.Errorf("failed to get short sha: %w", err)
 	}
